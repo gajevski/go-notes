@@ -5,6 +5,11 @@ import (
 	"os"
 )
 
+type Note struct {
+	Content string `json:"content"`
+	ID      int    `json:"id"`
+}
+
 func main() {
 	file, err := os.Create("test.txt")
 
