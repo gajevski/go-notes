@@ -1,7 +1,25 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 func main() {
-	fmt.Println("hello world!")
+	file, err := os.Create("test.txt")
+
+	if err != nil {
+		fmt.Println("Error %w", err)
+		return
+	}
+	bytes, err := file.WriteString("Test string 2")
+
+	if err != nil {
+		fmt.Println("Error %w", err)
+		file.Close()
+		return
+	}
+
+	fmt.Println(bytes, "File saved successfully")
+
 }
