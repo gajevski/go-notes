@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
-
-	tea "github.com/charmbracelet/bubbletea"
 )
 
 type Note struct {
@@ -12,98 +12,55 @@ type Note struct {
 	ID      int    `json:"id"`
 }
 
-type Model struct {
-	choices  []string
-	cursor   int
-	selected map[int]struct{}
-}
-
 func main() {
-	p := tea.NewProgram(initialModel())
-	if _, err := p.Run(); err != nil {
-		fmt.Printf("There's been an error: %v", err)
-		os.Exit(1)
+	scanner := bufio.NewScanner(os.Stdin)
+
+	fmt.Println("Create new note and press enter:")
+
+	if scanner.Scan() {
+		input := scanner.Text()
+		fmt.Println("New note:", input)
+		appendToFile(input)
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, "Error reading file", err)
 	}
 }
 
-func initialModel() Model {
-	return Model{
-		choices:  []string{"Buy carrots", "Buy celery", "Buy kohlrabi"},
-		selected: make(map[int]struct{}),
-	}
-}
+func appendToFile(content string) {
+	filePath := "notes.json"
+	var notes []Note
 
-func (m Model) Init() tea.Cmd {
-	return nil
-}
+	if _, err := os.Stat(filePath); err == nil {
+		fileData, err := os.ReadFile(filePath)
+		if err != nil {
+			fmt.Println("Error reading file:", err)
+			return
+		}
 
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-
-	case tea.KeyMsg:
-
-		// Cool, what was the actual key pressed?
-		switch msg.String() {
-
-		// These keys should exit the program.
-		case "ctrl+c", "q":
-			return m, tea.Quit
-
-		// The "up" and "k" keys move the cursor up
-		case "up", "k":
-			if m.cursor > 0 {
-				m.cursor--
-			}
-
-		// The "down" and "j" keys move the cursor down
-		case "down", "j":
-			if m.cursor < len(m.choices)-1 {
-				m.cursor++
-			}
-
-		// The "enter" key and the spacebar (a literal space) toggle
-		// the selected state for the item that the cursor is pointing at.
-		case "enter", " ":
-			_, ok := m.selected[m.cursor]
-			if ok {
-				delete(m.selected, m.cursor)
-			} else {
-				m.selected[m.cursor] = struct{}{}
-			}
+		if err := json.Unmarshal(fileData, &notes); err != nil {
+			fmt.Println("Error unmarshalling JSON:", err)
+			return
 		}
 	}
 
-	// Return the updated Model to the Bubble Tea runtime for processing.
-	// Note that we're not returning a command.
-	return m, nil
-}
+	newNote := Note{
+		Content: content,
+		ID:      len(notes) + 1,
+	}
+	notes = append(notes, newNote)
 
-func (m Model) View() string {
-	// The header
-	s := "What should we buy at the market?\n\n"
-
-	// Iterate over our choices
-	for i, choice := range m.choices {
-
-		// Is the cursor pointing at this choice?
-		cursor := " " // no cursor
-		if m.cursor == i {
-			cursor = ">" // cursor!
-		}
-
-		// Is this choice selected?
-		checked := " " // not selected
-		if _, ok := m.selected[i]; ok {
-			checked = "x" // selected!
-		}
-
-		// Render the row
-		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
+	updatedData, err := json.MarshalIndent(notes, "", "  ")
+	if err != nil {
+		fmt.Println("Error marshalling JSON:", err)
+		return
 	}
 
-	// The footer
-	s += "\nPress q to quit.\n"
+	if err := os.WriteFile(filePath, updatedData, 0644); err != nil {
+		fmt.Println("Error writing file:", err)
+		return
+	}
 
-	// Send the UI for rendering
-	return s
+	fmt.Println("Note added successfully")
 }
