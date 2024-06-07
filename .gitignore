@@ -27,4 +27,4 @@ tmp/
 .env
 
 # notes file
-./notes.json
+notes.json
