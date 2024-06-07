@@ -16,8 +16,6 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
   if len(os.Args) >= 2 {
     if (os.Args[1] == "new") {
-      fmt.Println("new command")
-
 	if scanner.Scan() {
 		input := scanner.Text()
 		fmt.Println("New note:", input)
@@ -29,7 +27,9 @@ func main() {
 	}
 }
 }
+if len(os.Args) < 2 {
   fmt.Println("Type 'new' to create a new note.")
+}
 }
 
 func appendToFile(content string) {
