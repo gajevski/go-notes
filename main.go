@@ -15,8 +15,8 @@ type Note struct {
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
   if len(os.Args) >= 2 {
-	fmt.Println("Create new note and press enter:")
-
+    if (os.Args[1] == "new") {
+      fmt.Println("new command")
 
 	if scanner.Scan() {
 		input := scanner.Text()
@@ -28,7 +28,8 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Error reading file", err)
 	}
 }
-  fmt.Println("Type 'new <note content>' to create a new note.")
+}
+  fmt.Println("Type 'new' to create a new note.")
 }
 
 func appendToFile(content string) {
