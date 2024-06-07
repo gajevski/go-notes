@@ -16,6 +16,7 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Println("Create new note and press enter:")
+  fmt.Println(os.Args)
 
 	if scanner.Scan() {
 		input := scanner.Text()
