@@ -5,20 +5,22 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+  "time"
 )
 
 type Note struct {
 	Content string `json:"content"`
 	ID      int    `json:"id"`
+  Timestamp time.Time `json: "timestamp"`
 }
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
   if len(os.Args) >= 2 {
-    if (os.Args[1] == "new") {
+    if os.Args[1] == "new" {
+    fmt.Println("New note:")
 	if scanner.Scan() {
 		input := scanner.Text()
-		fmt.Println("New note:", input)
 		appendToFile(input)
 	}
 
@@ -26,9 +28,13 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Error reading file", err)
 	}
 }
+if os.Args[1] == "all" {
+  fmt.Println("read all notes")
+  readNotesFromFile()
+}
 }
 if len(os.Args) < 2 {
-  fmt.Println("Type 'new' to create a new note.")
+  fmt.Println("Type 'new' to create a new note or 'all' to see all your notes.")
 }
 }
 
@@ -52,6 +58,7 @@ func appendToFile(content string) {
 	newNote := Note{
 		Content: content,
 		ID:      len(notes) + 1,
+    Timestamp: time.Now(),
 	}
 	notes = append(notes, newNote)
 
@@ -67,4 +74,31 @@ func appendToFile(content string) {
 	}
 
 	fmt.Println("Note added successfully")
+}
+
+func readNotesFromFile() {
+	filePath := "notes.json"
+	if _, err := os.Stat(filePath); err == nil {
+		fileData, err := os.ReadFile(filePath)
+		if err != nil {
+			fmt.Println("Error reading file:", err)
+			return
+		}
+
+		var notes []Note
+		if err := json.Unmarshal(fileData, &notes); err != nil {
+			fmt.Println("Error unmarshalling JSON:", err)
+			return
+		}
+
+		jsonData, err := json.MarshalIndent(notes, "", "  ")
+		if err != nil {
+			fmt.Println("Error marshalling JSON:", err)
+			return
+		}
+
+		fmt.Println(string(jsonData))
+	} else {
+		fmt.Println("No notes found.")
+	}
 }
