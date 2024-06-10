@@ -98,6 +98,10 @@ func readNotesFromFile() {
 		}
 
 		fmt.Println(string(jsonData))
+    
+		for _, note := range notes {
+			fmt.Printf("Note ID: %d\nContent: %s\nTimestamp: %s\n\n", note.ID, note.Content, note.Timestamp.Format(time.RFC3339))
+		}
 	} else {
 		fmt.Println("No notes found.")
 	}
