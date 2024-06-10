@@ -91,16 +91,8 @@ func readNotesFromFile() {
 			return
 		}
 
-		jsonData, err := json.MarshalIndent(notes, "", "  ")
-		if err != nil {
-			fmt.Println("Error marshalling JSON:", err)
-			return
-		}
-
-		fmt.Println(string(jsonData))
-    
 		for _, note := range notes {
-			fmt.Printf("Note ID: %d\nContent: %s\nTimestamp: %s\n\n", note.ID, note.Content, note.Timestamp.Format(time.RFC3339))
+			fmt.Printf("Note ID: %d\nContent: %s\nTimestamp: %s\n\n", note.ID, note.Content, note.Timestamp.Format("02-01-2006 15:04"))
 		}
 	} else {
 		fmt.Println("No notes found.")
