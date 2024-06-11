@@ -92,7 +92,7 @@ func readNotesFromFile() {
 		}
 
 		for _, note := range notes {
-			fmt.Printf("Note ID: %d\nContent: %s\nTimestamp: %s\n\n", note.ID, note.Content, note.Timestamp.Format("02-01-2006 15:04"))
+			fmt.Printf("ID: %d\nNote: %s\nCreated: %s\n\n", note.ID, note.Content, note.Timestamp.Format("02-01-2006 15:04"))
 		}
 	} else {
 		fmt.Println("No notes found.")
