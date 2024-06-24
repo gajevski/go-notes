@@ -5,37 +5,37 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-  "time"
+	"time"
 )
 
 type Note struct {
-	Content string `json:"content"`
-	ID      int    `json:"id"`
-  Timestamp time.Time `json: "timestamp"`
+	Timestamp time.Time `json:"timestamp"`
+	Content   string    `json:"content"`
+	ID        int       `json:"id"`
 }
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-  if len(os.Args) >= 2 {
-    if os.Args[1] == "new" {
-    fmt.Println("New note:")
-	if scanner.Scan() {
-		input := scanner.Text()
-		appendToFile(input)
-	}
+	if len(os.Args) >= 2 {
+		if os.Args[1] == "new" {
+			fmt.Println("New note:")
+			if scanner.Scan() {
+				input := scanner.Text()
+				appendToFile(input)
+			}
 
-	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "Error reading file", err)
+			if err := scanner.Err(); err != nil {
+				fmt.Fprintln(os.Stderr, "Error reading file", err)
+			}
+		}
+		if os.Args[1] == "all" {
+			fmt.Println("read all notes")
+			readNotesFromFile()
+		}
 	}
-}
-if os.Args[1] == "all" {
-  fmt.Println("read all notes")
-  readNotesFromFile()
-}
-}
-if len(os.Args) < 2 {
-  fmt.Println("Type 'new' to create a new note or 'all' to see all your notes.")
-}
+	if len(os.Args) < 2 {
+		fmt.Println("Type 'new' to create a new note or 'all' to see all your notes.")
+	}
 }
 
 func appendToFile(content string) {
@@ -56,9 +56,9 @@ func appendToFile(content string) {
 	}
 
 	newNote := Note{
-		Content: content,
-		ID:      len(notes) + 1,
-    Timestamp: time.Now(),
+		Content:   content,
+		ID:        len(notes) + 1,
+		Timestamp: time.Now(),
 	}
 	notes = append(notes, newNote)
 
